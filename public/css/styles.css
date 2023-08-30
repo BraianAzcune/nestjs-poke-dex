@@ -1,0 +1,12 @@
+div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+}
+
+h1 {
+    color: blue;
+    text-align: center;
+    font-size: 4em;
+}
