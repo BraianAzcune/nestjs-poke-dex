@@ -6,10 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { PokemonService } from './pokemon.service';
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
+import { Pokemon } from './entities/pokemon.entity';
 
 @Controller('pokemon')
 export class PokemonController {
@@ -25,9 +28,12 @@ export class PokemonController {
     return this.pokemonService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.pokemonService.findOne(+id);
+  @Get(':term')
+  async findOne(@Param('term') term: string) {
+    if (term.length > 50) {
+      throw new BadRequestException('La longitud del termino es muy grande');
+    }
+    return await this.pokemonService.findOne(term);
   }
 
   @Patch(':id')
