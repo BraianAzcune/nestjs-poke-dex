@@ -4,13 +4,12 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreatePokemonDto } from './dto/create-pokemon.dto';
-import { UpdatePokemonDto } from './dto/update-pokemon.dto';
-import mongoose, { Model } from 'mongoose';
-import { Pokemon } from './entities/pokemon.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { MongoError } from 'mongodb';
-import { NotFoundError } from 'rxjs';
+import mongoose, { Model } from 'mongoose';
+import { CreatePokemonDto } from './dto/create-pokemon.dto';
+import { UpdatePokemonDto } from './dto/update-pokemon.dto';
+import { Pokemon } from './entities/pokemon.entity';
 
 @Injectable()
 export class PokemonService {
@@ -19,29 +18,12 @@ export class PokemonService {
   ) {}
 
   async create(createPokemonDto: CreatePokemonDto) {
+    createPokemonDto.name = createPokemonDto.name.toLowerCase();
     try {
       return await this.pokemonModel.create(createPokemonDto);
     } catch (error) {
       console.log('error al crear', createPokemonDto, error);
-      if (!(error instanceof MongoError)) {
-        throw new InternalServerErrorException(
-          'no se puede crear el pokemon\n' + typeof error,
-        );
-      }
-      if (error.code === 11000) {
-        throw new BadRequestException(
-          `El pokemon existe en la base de datos ${JSON.stringify(
-            (error as any)?.keyValue,
-          )}`,
-        );
-      } else {
-        throw new InternalServerErrorException(
-          'no se puede crear el pokemon\n' +
-            typeof error +
-            '\nerror.code=' +
-            error.code,
-        );
-      }
+      this.handleExceptions(error);
     }
   }
 
@@ -68,11 +50,49 @@ export class PokemonService {
     return p;
   }
 
-  update(id: number, updatePokemonDto: UpdatePokemonDto) {
-    return `This action updates a #${id} pokemon`;
+  async update(termino: string, updatePokemonDto: UpdatePokemonDto) {
+    const p = await this.findOne(termino);
+    if (updatePokemonDto.name != undefined) {
+      updatePokemonDto.name = updatePokemonDto.name.toLowerCase();
+    }
+    try {
+      await p.updateOne(updatePokemonDto);
+    } catch (error) {
+      this.handleExceptions(error);
+    }
+
+    return { ...p.toJSON(), ...updatePokemonDto } as Pokemon;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} pokemon`;
+  async remove(mongoID: string) {
+    // const p = await this.findOne(mongoID);
+    // return await p.deleteOne();
+    const rta = await this.pokemonModel.deleteOne({ _id: mongoID });
+    if (rta.deletedCount == 0) {
+      throw new NotFoundException(`pokemon con id <${mongoID}> no encontrado`);
+    }
+    return 'borrador exitoso';
+  }
+
+  private handleExceptions(error: any) {
+    if (!(error instanceof MongoError)) {
+      throw new InternalServerErrorException(
+        'no se puede <crear|editar> el pokemon\n' + typeof error,
+      );
+    }
+    if (error.code === 11000) {
+      throw new BadRequestException(
+        `No puede cambiar el <name> o <no> a esos valores, ya que estan ocupados ${JSON.stringify(
+          (error as any)?.keyValue,
+        )}`,
+      );
+    } else {
+      throw new InternalServerErrorException(
+        'No se puede <crear|editar> el pokemon\n' +
+          typeof error +
+          '\nerror.code=' +
+          error.code,
+      );
+    }
   }
 }
