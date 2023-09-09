@@ -27,6 +27,16 @@ export class PokemonService {
     }
   }
 
+  async bulkInsert(pokemons: Pokemon[]) {
+    pokemons.forEach((x) => (x.name = x.name.toLowerCase()));
+    try {
+      return await this.pokemonModel.insertMany(pokemons);
+    } catch (error) {
+      console.error('error al hacer insercion masiva de pokemons', error);
+      this.handleExceptions(error);
+    }
+  }
+
   findAll() {
     return `This action returns all pokemon`;
   }
