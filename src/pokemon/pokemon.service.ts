@@ -10,6 +10,7 @@ import mongoose, { Model } from 'mongoose';
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
 import { Pokemon } from './entities/pokemon.entity';
+import { PaginationDto } from 'src/common/dto/Pagination';
 
 @Injectable()
 export class PokemonService {
@@ -37,8 +38,12 @@ export class PokemonService {
     }
   }
 
-  findAll() {
-    return `This action returns all pokemon`;
+  findAll(q: PaginationDto) {
+    return this.pokemonModel
+      .find()
+      .sort({ _id: 1 })
+      .skip(q.offset)
+      .limit(q.limit);
   }
 
   async findOne(termino: string): Promise<Pokemon> {

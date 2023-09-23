@@ -10,6 +10,10 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
+      transformOptions: {
+        // esto permite que los DTO del controlador sea casteados
+        enableImplicitConversion: true,
+      },
     }),
   );
   await app.listen(8080);
