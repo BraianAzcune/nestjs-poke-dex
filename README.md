@@ -12,7 +12,12 @@ npm install
 ```cmd
 docker-compose up -d 
 ```
-4. ejecutar aplicacion en modo de deteccion de cambios
+
+4. crear copia de __.env.template__ y renombrar a __.env__
+configurar las variables
+
+
+5. ejecutar aplicacion en modo de deteccion de cambios
 ```cmd
 npm run start:dev
 ```

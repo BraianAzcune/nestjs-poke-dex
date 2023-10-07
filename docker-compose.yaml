@@ -9,4 +9,4 @@ services:
     environment:
       - MONGODB_DATABASE=nest-pokedex
     volumes:
-      - ./mongo:/data/db
+      - ./volumen_mongo_nestjs_pokedex:/data/db
