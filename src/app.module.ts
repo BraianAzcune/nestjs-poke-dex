@@ -20,7 +20,7 @@ import { JoiValidationSchemaEnvironmments } from './config/joi.validation';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),
-    MongooseModule.forRoot(process.env.mongodb),
+    MongooseModule.forRoot(process.env.MONGODB),
     PokemonModule,
     CommonModule,
     SeedModule,
@@ -31,6 +31,6 @@ import { JoiValidationSchemaEnvironmments } from './config/joi.validation';
 export class AppModule {
   private readonly log = new Logger(AppModule.name);
   constructor(config: ConfigService) {
-    this.log.log('App running on port:' + config.get('port'));
+    this.log.log('App running on port:' + config.get('PORT'));
   }
 }

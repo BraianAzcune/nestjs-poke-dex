@@ -1,6 +1,5 @@
 
-#env
-.env
+#env se deberian ignorar las variables de entorno...
 volumen_mongo_nestjs_pokedex
 # compiled output
 /dist
