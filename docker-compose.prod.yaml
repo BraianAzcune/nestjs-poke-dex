@@ -26,9 +26,9 @@ services:
     # el nombre del contenedor se puede usar para referenciar por DNS
     container_name: mongo-poke
     restart: always
-    ports:
-      - 27017:27017
+    # ports:
+    #   - 27017:27017
     environment:
       MONGODB_DATABASE: nest-pokemon
-    # volumes:
-    #   - ./mongo:/data/db
+    volumes:
+      - ./volumen_mongo_nestjs_pokedex:/data/db
